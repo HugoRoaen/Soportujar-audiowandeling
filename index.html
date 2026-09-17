@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#351c4d">
+  <meta name="description" content="Audiowandeling door Soportújar, het mysterieuze heksendorp van de Alpujarras.">
+  <title>Soportújar – Magische audiowandeling</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <style>
+    :root { --ink:#241b2c; --purple:#4b2566; --purple2:#704097; --gold:#f2c14e; --cream:#fffaf1; --card:#fff; --muted:#695e70; --shadow:0 14px 34px rgba(38,20,50,.13); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--ink); background:radial-gradient(circle at top right,#eadff1 0,transparent 34rem),var(--cream); font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; line-height:1.6; }
+    img { display:block; max-width:100%; }
+    .hero { position:relative; min-height:52vw; max-height:640px; display:grid; align-items:end; overflow:hidden; background:#24132e; }
+    .hero img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .hero::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(20,8,28,.05) 25%,rgba(20,8,28,.88)); }
+    .hero-copy { position:relative; z-index:1; width:min(1100px,92%); margin:0 auto; padding:clamp(2rem,7vw,5rem) 0; color:white; text-shadow:0 2px 10px rgba(0,0,0,.4); }
+    .eyebrow { margin:0 0 .35rem; color:#ffe19a; font-weight:800; letter-spacing:.12em; text-transform:uppercase; font-size:.8rem; }
+    h1 { margin:0; font-family:Georgia,serif; font-size:clamp(2.4rem,7vw,5.4rem); line-height:1; }
+    .subtitle { margin:.7rem 0 0; max-width:700px; font-size:clamp(1rem,2.4vw,1.35rem); }
+    main { width:min(1100px,92%); margin:auto; }
+    .intro { max-width:850px; margin:clamp(2.5rem,6vw,5rem) auto; font-size:1.08rem; }
+    .intro h2,.section-title { font-family:Georgia,serif; color:var(--purple); font-size:clamp(1.8rem,4vw,2.7rem); line-height:1.15; }
+    .intro p { margin:.85rem 0; }
+    .quicklinks { display:flex; gap:.8rem; flex-wrap:wrap; margin-top:1.5rem; }
+    .button { display:inline-flex; align-items:center; justify-content:center; gap:.45rem; min-height:46px; padding:.7rem 1rem; border:0; border-radius:999px; background:var(--purple); color:white; font-weight:750; text-decoration:none; box-shadow:0 5px 14px rgba(75,37,102,.2); }
+    .button.alt { background:#fff; color:var(--purple); border:2px solid #d9c8e2; box-shadow:none; }
+    .route { margin:3rem 0 5rem; }
+    #map { height:min(62vh,520px); min-height:360px; border-radius:22px; overflow:hidden; box-shadow:var(--shadow); background:#e8e1eb; }
+    .map-note { color:var(--muted); margin:.7rem .2rem 0; font-size:.94rem; }
+    .stops { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.35rem; margin:1.3rem 0 5rem; }
+    .stop { display:grid; grid-template-columns:42% 1fr; min-height:265px; background:var(--card); border-radius:20px; overflow:hidden; box-shadow:var(--shadow); border:1px solid rgba(74,37,101,.08); }
+    .stop-image { width:100%; height:100%; min-height:265px; object-fit:cover; background:#ddd; }
+    .stop-body { padding:1.25rem; display:flex; flex-direction:column; justify-content:center; }
+    .number { width:2.15rem; height:2.15rem; display:grid; place-items:center; border-radius:50%; background:var(--gold); color:#2b1637; font-weight:900; }
+    .stop h3 { margin:.7rem 0 1rem; color:var(--purple); line-height:1.2; font-size:1.15rem; }
+    audio { width:100%; height:42px; }
+    footer { padding:2rem 4%; text-align:center; color:#eadff1; background:#2a1735; }
+    .top { position:fixed; right:1rem; bottom:1rem; z-index:900; width:46px; height:46px; display:grid; place-items:center; border-radius:50%; background:var(--purple); color:white; text-decoration:none; box-shadow:0 5px 16px rgba(0,0,0,.28); }
+    @media (max-width:850px) { .stops { grid-template-columns:1fr; } }
+    @media (max-width:520px) { .hero { min-height:72vw; } .stop { grid-template-columns:1fr; } .stop-image { height:235px; min-height:0; } .stop-body { padding:1.1rem; } #map { min-height:330px; } }
+  </style>
+</head>
+<body id="top">
+  <header class="hero">
+    <img src="hoofdfoto.png" alt="Collage van het magische heksendorp Soportújar">
+    <div class="hero-copy">
+      <p class="eyebrow">Audiowandeling</p>
+      <h1>Soportújar</h1>
+      <p class="subtitle">Ontdek het mysterieuze heksendorp van de Alpujarras.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="intro-title">
+      <h2 id="intro-title">Welkom in de wereld van magie</h2>
+      <p>Vandaag richten we onze aandacht eens niet op de natuur, de geschiedenis of de gebouwen. We laten de werkelijkheid even achter ons en dompelen ons helemaal onder in een wereld van magie, legendes en fantasie.</p>
+      <p>Tijdens onze wandeling dwalen we door smalle, witgekalkte straatjes en ontmoeten we heksen, draken en andere wonderlijke figuren. We maken kennis met Baba Yaga, kijken in geheimzinnige ketels, passeren bijzondere fonteinen en ontdekken de verhalen die Soportújar zijn magische karakter geven.</p>
+      <p>Via de audiogids krijg je bij iedere halte uitleg en leuke weetjes. Neem rustig de tijd om rond te kijken, foto’s te maken en vooral te genieten van deze bijzondere belevenis.</p>
+      <p>Laat je meevoeren door de magie en ontdek waarom Soportújar bekendstaat als het heksendorp van Andalusië.</p>
+      <div class="quicklinks">
+        <a class="button" href="#haltes">Start de audiowandeling</a>
+        <a class="button alt" href="#route">Bekijk de routekaart</a>
+      </div>
+    </section>
+
+    <section class="route" id="route" aria-labelledby="route-title">
+      <h2 class="section-title" id="route-title">De wandelroute</h2>
+      <div id="map" aria-label="Interactieve kaart van de wandeling"></div>
+      <p class="map-note">Tik op de kaart om in te zoomen en de route te bekijken.</p>
+      <div class="quicklinks">
+        <a class="button" href="https://loc.wiki/t/111292297?h=bpb78rjqzx&amp;wa=so&amp;la=nl" target="_blank" rel="noopener">Open de wandeling in Wikiloc</a>
+      </div>
+    </section>
+
+    <section id="haltes" aria-labelledby="stops-title">
+      <h2 class="section-title" id="stops-title">De 20 magische haltes</h2>
+      <div class="stops" id="stops"></div>
+    </section>
+  </main>
+
+  <footer>Soportújar · Een magische audiowandeling door de Alpujarras</footer>
+  <a class="top" href="#top" aria-label="Terug naar boven">↑</a>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script>
+    const titles = [
+      "Algemene kennismaking", "Cueva del Ojo de la Bruja", "Bruja Baba Yaga",
+      "Centro de Brujería de Soportújar", "Fuente de los Leones", "Bruja Estrellada",
+      "Fuente de San Antón", "De heksen en hun toverdrank", "De kist met de heks",
+      "Fuente del Dragón", "Pozo de los Deseos", "Calle Zanjilla", "Fuente del Moral",
+      "Los Calderos", "De spin", "De slang", "De bezem", "Fuente del Chorro",
+      "Casa de Baba Yaga", "Casa de Hansel y Gretel"
+    ];
+
+    const stops = document.getElementById("stops");
+    titles.forEach((title, i) => {
+      const n = i + 1;
+      const article = document.createElement("article");
+      article.className = "stop";
+      article.innerHTML = `
+        <img class="stop-image" src="photos/foto-${n}.jpg" alt="${title}" loading="lazy">
+        <div class="stop-body">
+          <span class="number">${n}</span>
+          <h3>${title}</h3>
+          <audio controls preload="metadata" aria-label="Audio ${n}: ${title}">
+            <source src="assets/audio/audio-${n}.mp3" type="audio/mpeg">
+            Je browser ondersteunt deze audiospeler niet.
+          </audio>
+        </div>`;
+      stops.appendChild(article);
+    });
+
+    document.querySelectorAll("audio").forEach(player => {
+      player.addEventListener("play", () => {
+        document.querySelectorAll("audio").forEach(other => { if (other !== player) other.pause(); });
+      });
+    });
+
+    const map = L.map("map", { scrollWheelZoom:false }).setView([36.928, -3.405], 16);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom:19,
+      attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    fetch("route/soportujar.gpx")
+      .then(r => r.text())
+      .then(text => {
+        const xml = new DOMParser().parseFromString(text, "application/xml");
+        const points = [...xml.querySelectorAll("trkpt")].map(p => [Number(p.getAttribute("lat")), Number(p.getAttribute("lon"))]);
+        if (!points.length) throw new Error("Geen routepunten gevonden");
+        const line = L.polyline(points, { color:"#7a3698", weight:5, opacity:.9 }).addTo(map);
+        L.circleMarker(points[0], { radius:8, color:"#fff", weight:3, fillColor:"#2e9c63", fillOpacity:1 }).bindPopup("Start van de wandeling").addTo(map);
+        L.circleMarker(points[points.length-1], { radius:8, color:"#fff", weight:3, fillColor:"#b84545", fillOpacity:1 }).bindPopup("Einde van de wandeling").addTo(map);
+        map.fitBounds(line.getBounds(), { padding:[24,24] });
+      })
+      .catch(() => {
+        document.querySelector(".map-note").textContent = "De routekaart kon niet worden geladen. Gebruik de knop om de wandeling in Wikiloc te openen.";
+      });
+  </script>
+</body>
+</html>
